@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { signOut } from "firebase/auth";
@@ -8,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building, Code, Database, Brain, Target, User, Briefcase, Rocket, Play, Clock, Check, Star, AlertTriangle, Lightbulb, BarChart, LineChart, PieChart, Download, Filter, Calendar, TrendingUp, TrendingDown } from "lucide-react";
 import { AIResumeBot } from "@/components/student/AIResumeBot";
+import { AIInterviewModal } from "@/components/student/AIInterviewModal";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -38,6 +41,9 @@ export default function StudentDashboard() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="space-y-8">
+          {/* AI Interview Modal */}
+          <AIInterviewModal />
+
           {/* AI Resume Bot Section */}
           <div className="mt-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">AI Resume Analysis</h2>
