@@ -12,6 +12,7 @@ import { InterviewStatusTracker } from "@/components/student/InterviewStatusTrac
 import { InterviewQuickStart } from "@/components/student/InterviewQuickStart";
 import { InterviewTips } from "@/components/student/InterviewTips";
 import { PerformanceAnalytics } from "@/components/student/PerformanceAnalytics";
+import { AIResumeBot } from "@/components/student/AIResumeBot";
 
 interface InterviewRound {
   id: string;
@@ -109,6 +110,15 @@ export default function InterviewSimulation() {
             reports={interviewReports}
             onDownloadReport={handleDownloadReport}
           />
+
+          {/* AI Resume Bot Section */}
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">AI Resume Analysis</h2>
+            <p className="text-gray-600 mb-6">
+              Upload your resume and get AI-powered analysis to find the best alumni mentors for you
+            </p>
+            <AIResumeBot />
+          </div>
         </div>
       </main>
     </div>
