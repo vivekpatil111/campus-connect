@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -251,8 +249,10 @@ export default function InterviewSimulation() {
             <InterviewEngine
               company={interviewConfig.company}
               role={interviewConfig.role}
-              type={interviewConfig.type}
+              interviewType={interviewConfig.type}
+              questions={companyQuestions[interviewConfig.company as keyof typeof companyQuestions]?.[interviewConfig.type] || []}
               onComplete={handleCompleteInterview}
+              onClose={handleBackToSetup}
             />
           </div>
         )}
