@@ -42,4 +42,82 @@ export default function InterviewSimulation() {
     ];
   });
 
-  // ... rest of the component code
+  // Mock data for performance analytics
+  const performanceMetrics = [
+    { name: "Overall Score", value: 85, previous: 78 },
+    { name: "Technical Skills", value: 90, previous: 85 },
+    { name: "Communication", value: 80, previous: 75 },
+    { name: "Problem Solving", value: 88, previous: 82 }
+  ];
+
+  // Mock data for interview reports
+  const interviewReports = [
+    {
+      id: "1",
+      company: "Google",
+      role: "Frontend Engineer",
+      score: 85,
+      date: "2024-03-15",
+      companyLogo: "G"
+    },
+    {
+      id: "2",
+      company: "Microsoft",
+      role: "Backend Engineer",
+      score: 90,
+      date: "2024-03-10",
+      companyLogo: "M"
+    }
+  ];
+
+  const handleResumeRound = (roundId: string) => {
+    console.log("Resume round:", roundId);
+    // In a real implementation, this would navigate to the appropriate round
+  };
+
+  const handleDownloadReport = (reportId: string) => {
+    console.log("Download report:", reportId);
+    // In a real implementation, this would trigger a PDF download
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900">Interview Simulation</h1>
+          <div className="flex items-center space-x-4">
+            <span className="text-gray-700">Welcome, {user?.email}</span>
+            <Button onClick={() => navigate("/student")} variant="outline">
+              Back to Dashboard
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div className="space-y-8">
+          {/* Interview Status Tracker */}
+          <InterviewStatusTracker
+            company="Google"
+            role="Frontend Engineer"
+            rounds={interviewRounds}
+            onResumeRound={handleResumeRound}
+          />
+
+          {/* Quick Start Section */}
+          <InterviewQuickStart />
+
+          {/* Interview Tips */}
+          <InterviewTips />
+
+          {/* Performance Analytics */}
+          <PerformanceAnalytics
+            metrics={performanceMetrics}
+            reports={interviewReports}
+            onDownloadReport={handleDownloadReport}
+          />
+        </div>
+      </main>
+    </div>
+  );
+}
