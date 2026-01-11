@@ -13,6 +13,8 @@ import { InterviewQuickStart } from "@/components/student/InterviewQuickStart";
 import { InterviewTips } from "@/components/student/InterviewTips";
 import { PerformanceAnalytics } from "@/components/student/PerformanceAnalytics";
 import { AIResumeBot } from "@/components/student/AIResumeBot";
+import { InterviewEngine } from "@/components/interview/InterviewEngine";
+import { InterviewCompletionScreen } from "@/components/interview/InterviewCompletionScreen";
 
 interface InterviewRound {
   id: string;
@@ -70,12 +72,42 @@ export default function InterviewSimulation() {
     }
   ];
 
+  // Interview state
+  const [showInterviewEngine, setShowInterviewEngine] = useState(false);
+  const [showCompletionScreen, setShowCompletionScreen] = useState(false);
+  const [interviewAnswers, setInterviewAnswers] = useState<any[]>([]);
+  const [interviewMetrics, setInterviewMetrics] = useState<any>(null);
+  const [selectedCompany, setSelectedCompany] = useState("google");
+  const [selectedRole, setSelectedRole] = useState("frontend");
+  const [selectedType, setSelectedType] = useState("technical");
+
   const handleResumeRound = (roundId: string) => {
     console.log("Resume round:", roundId);
   };
 
   const handleDownloadReport = (reportId: string) => {
     console.log("Download report:", reportId);
+  };
+
+  const handleStartInterview = () => {
+    setShowInterviewEngine(true);
+  };
+
+  const handleInterviewComplete = (answers: any[], metrics: any) => {
+    setInterviewAnswers(answers);
+    setInterviewMetrics(metrics);
+    setShowInterviewEngine(false);
+    setShowCompletionScreen(true);
+  };
+
+  const handleCloseCompletion = () => {
+    setShowCompletionScreen(false);
+  };
+
+  const handleNextRound = () => {
+    setShowCompletionScreen(false);
+    // In a real implementation, this would start the next round
+    // For now, just close the completion screen
   };
 
   return (
@@ -121,6 +153,37 @@ export default function InterviewSimulation() {
           </div>
         </div>
       </main>
+
+      {/* Interview Engine Modal */}
+      {showInterviewEngine && (
+        <InterviewEngine
+          company={selectedCompany}
+          role={selectedRole}
+          interviewType={selectedType}
+          questions={[
+            "Tell me about yourself",
+            "What are your strengths and weaknesses?",
+            "Why do you want to work at this company?",
+            "Describe a challenging project you worked on",
+            "Where do you see yourself in 5 years?"
+          ]}
+          onComplete={handleInterviewComplete}
+          onClose={() => setShowInterviewEngine(false)}
+        />
+      )}
+
+      {/* Interview Completion Screen */}
+      {showCompletionScreen && (
+        <InterviewCompletionScreen
+          company={selectedCompany}
+          role={selectedRole}
+          interviewType={selectedType}
+          answers={interviewAnswers}
+          engagementMetrics={interviewMetrics}
+          onClose={handleCloseCompletion}
+          onNextRound={handleNextRound}
+        />
+      )}
     </div>
   );
 }
