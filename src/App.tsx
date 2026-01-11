@@ -19,6 +19,7 @@ import VerifiedAlumni from "./pages/student/VerifiedAlumni";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import InterviewSimulation from "./pages/student/InterviewSimulation";
+import StudentDashboard from "./pages/student/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
 
           {/* Protected routes */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/student" element={<StudentDashboard />} />
           <Route path="/student/:companyId/roles" element={<RoleSelection />} />
           <Route path="/student/:companyId/:roleId/interview" element={<InterviewDashboard />} />
           <Route path="/student/:companyId/:roleId/video-interview" element={<VideoStream sessionId="test" companyName="Test" roleName="Test" onEndSession={() => {}} />} />
