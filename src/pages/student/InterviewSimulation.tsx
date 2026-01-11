@@ -7,7 +7,10 @@ import { ArrowLeft, Home } from "lucide-react";
 import { InterviewSetup } from "@/components/interview/InterviewSetup";
 import { InterviewEngine } from "@/components/interview/InterviewEngine";
 import { InterviewReport } from "@/components/interview/InterviewReport";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { InterviewQuickStart } from "@/components/student/InterviewQuickStart";
+import { InterviewStatusTracker } from "@/components/student/InterviewStatusTracker";
+import { PerformanceAnalytics } from "@/components/student/PerformanceAnalytics";
+import { InterviewTips } from "@/components/student/InterviewTips";
 
 export default function InterviewSimulation() {
   const { user } = useAuth();
@@ -109,6 +112,40 @@ export default function InterviewSimulation() {
     return interviewers[company as keyof typeof interviewers] || "AI Interviewer";
   };
 
+  // Mock performance metrics for analytics
+  const performanceMetrics = [
+    { name: "Overall Score", value: interviewResults.scores.overall, previous: 75 },
+    { name: "Technical Skills", value: interviewResults.scores.technical, previous: 70 },
+    { name: "Communication", value: interviewResults.scores.communication, previous: 65 },
+    { name: "Engagement", value: interviewResults.scores.engagement, previous: 80 }
+  ];
+
+  // Mock interview reports
+  const interviewReports = [
+    {
+      id: "1",
+      company: "Google",
+      role: "Frontend Engineer",
+      date: "2024-03-15",
+      score: 85,
+      status: "completed"
+    },
+    {
+      id: "2",
+      company: "Microsoft",
+      role: "Backend Engineer",
+      date: "2024-03-10",
+      score: 78,
+      status: "completed"
+    }
+  ];
+
+  // Mock interview rounds for status tracking
+  const interviewRounds = [
+    { id: "technical", name: "Technical Interview", status: "completed", score: 85, date: "2024-03-15" },
+    { id: "hr", name: "HR / Behavioral Round", status: "completed", score: 80, date: "2024-03-15" }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <header className="bg-white shadow-sm">
@@ -152,7 +189,7 @@ export default function InterviewSimulation() {
         {/* Interview Setup */}
         {interviewState === "setup" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <InterviewSetup onStartInterview={handleStartInterview} />
+            <InterviewQuickStart />
 
             {/* Enhanced: Company Selection Card */}
             <Card className="bg-white shadow-sm">
@@ -259,13 +296,33 @@ export default function InterviewSimulation() {
 
         {/* Interview Report */}
         {interviewState === "completed" && (
-          <InterviewReport
-            company={interviewConfig.company}
-            role={interviewConfig.role}
-            type={interviewConfig.type}
-            answers={interviewResults.answers}
-            scores={interviewResults.scores}
-          />
+          <div className="space-y-8">
+            <InterviewReport
+              company={interviewConfig.company}
+              role={interviewConfig.role}
+              type={interviewConfig.type}
+              answers={interviewResults.answers}
+              scores={interviewResults.scores}
+            />
+
+            {/* Interview Status Tracker */}
+            <InterviewStatusTracker
+              company={interviewConfig.company}
+              role={interviewConfig.role}
+              rounds={interviewRounds}
+              onResumeRound={(roundId) => console.log("Resume round:", roundId)}
+            />
+
+            {/* Performance Analytics */}
+            <PerformanceAnalytics
+              metrics={performanceMetrics}
+              reports={interviewReports}
+              onDownloadReport={(reportId) => console.log("Download report:", reportId)}
+            />
+
+            {/* Interview Tips */}
+            <InterviewTips />
+          </div>
         )}
       </main>
 
