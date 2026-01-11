@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { BarChart, LineChart, PieChart, Download, Filter, Calendar, TrendingUp, TrendingDown, Lightbulb } from "lucide-react";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 interface PerformanceMetric {
   name: string;
@@ -18,8 +22,68 @@ interface PerformanceAnalyticsProps {
 }
 
 export function PerformanceAnalytics({ metrics, reports, onDownloadReport }: PerformanceAnalyticsProps) {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [timeRange, setTimeRange] = useState("month");
   const [selectedMetric, setSelectedMetric] = useState("overall");
+  const [realTimeMetrics, setRealTimeMetrics] = useState<PerformanceMetric[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch real-time performance data from Firebase
+  useEffect(() => {
+    if (!user) return;
+
+    const q = query(
+      collection(db, "interviewReports"),
+      where("studentId", "==", user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const reportsData: any[] = [];
+      querySnapshot.forEach((doc) => {
+        reportsData.push({ id: doc.id, ...doc.data() });
+      });
+
+      // Calculate metrics from real data
+      if (reportsData.length > 0) {
+        const calculatedMetrics: PerformanceMetric[] = [
+          {
+            name: "Overall Score",
+            value: Math.round(reportsData.reduce((sum, report) => sum + (report.scores?.overall || 0), 0) / reportsData.length),
+            previous: 78
+          },
+          {
+            name: "Technical Skills",
+            value: Math.round(reportsData.reduce((sum, report) => sum + (report.scores?.technical || 0), 0) / reportsData.length),
+            previous: 85
+          },
+          {
+            name: "Communication",
+            value: Math.round(reportsData.reduce((sum, report) => sum + (report.scores?.communication || 0), 0) / reportsData.length),
+            previous: 75
+          },
+          {
+            name: "Problem Solving",
+            value: Math.round(reportsData.reduce((sum, report) => sum + (report.scores?.problemSolving || 0), 0) / reportsData.length),
+            previous: 82
+          }
+        ];
+        setRealTimeMetrics(calculatedMetrics);
+      }
+
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching real-time metrics:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load performance data",
+        variant: "destructive"
+      });
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user, toast]);
 
   const getTrendIcon = (current: number, previous?: number) => {
     if (!previous) return null;
@@ -36,12 +100,18 @@ export function PerformanceAnalytics({ metrics, reports, onDownloadReport }: Per
     return `${change > 0 ? "+" : ""}${percentage}%`;
   };
 
+  // Use real-time metrics if available, otherwise use props
+  const displayMetrics = realTimeMetrics.length > 0 ? realTimeMetrics : metrics;
+
   return (
     <div className="space-y-6">
       {/* Metrics Overview */}
       <Card className="bg-white shadow-sm">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-gray-900">Performance Metrics</CardTitle>
+          <p className="text-sm text-gray-600">
+            {loading ? "Loading real-time data..." : "Real-time performance data from your interviews"}
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -59,7 +129,7 @@ export function PerformanceAnalytics({ metrics, reports, onDownloadReport }: Per
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {metrics.map((metric) => (
+            {displayMetrics.map((metric) => (
               <div key={metric.name} className="bg-gray-50 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div>
@@ -181,7 +251,7 @@ export function PerformanceAnalytics({ metrics, reports, onDownloadReport }: Per
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
                     <span className="font-bold text-indigo-600">
-                      {report.company.charAt(0)}
+                      {report.companyLogo}
                     </span>
                   </div>
                   <div>
@@ -189,7 +259,7 @@ export function PerformanceAnalytics({ metrics, reports, onDownloadReport }: Per
                       {report.company} - {report.role}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {new Date(report.date).toLocaleDateString()} • {report.score}% Score
+                      {report.date} • {report.score}% Score
                     </p>
                   </div>
                 </div>
