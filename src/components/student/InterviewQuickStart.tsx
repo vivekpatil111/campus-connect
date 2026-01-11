@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Rocket, Play, Clock, Check, Star, Code, Database, Brain, Target } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Rocket, Play, Clock, Check, Star, Code, Database, Brain, Target, User, Building, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function InterviewQuickStart() {

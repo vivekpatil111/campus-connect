@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Check, Clock, X, AlertTriangle, Play, Pause } from "lucide-react";
+import { Check, Clock, X, AlertTriangle, Play, Pause, User, Code } from "lucide-react";
 
 interface InterviewRound {
   id: string;

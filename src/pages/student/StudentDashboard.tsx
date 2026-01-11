@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Rocket, FileText, BarChart, Users, Check, Clock, X, AlertTriangle, Star, MessageCircle, Calendar, Search, Filter, Download, ArrowRight, ArrowLeft, Play, Pause, StopCircle, Mic, MicOff, Video, VideoOff, Eye, Camera, CheckCircle, AlertCircle, Loader2, User, GraduationCap, Linkedin, Briefcase, Code, Database, Brain, Lightbulb, TrendingUp, TrendingDown, Target, Award, Trophy, Medal, ChartBar, ChartPie, ChartLine, Cog, Settings, Bell, Bookmark, Heart, Share, MoreVertical, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { Rocket, FileText, BarChart, Users, Check, Clock, X, AlertTriangle, Star, MessageCircle, Calendar, Search, Filter, Download, ArrowRight, ArrowLeft, Play, Pause, StopCircle, Mic, MicOff, Video, VideoOff, Eye, Camera, CheckCircle, AlertCircle, Loader2, User, GraduationCap, Linkedin, Briefcase, Code, Database, Brain, Lightbulb, TrendingUp, TrendingDown, Target, Award, Trophy, Medal, ChartBar, ChartPie, ChartLine, Cog, Settings, Bell, Bookmark, Heart, Share, MoreVertical, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Home, Upload, Handshake, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -239,7 +239,7 @@ export default function StudentDashboard() {
                           <SelectItem key={company.value} value={company.value}>
                             <div className="flex items-center gap-2">
                               <div className={`w-6 h-6 rounded ${company.color}`}>
-                                <span className="font-bold">{company.logo}</span>
+                                <span className="font-bold">{company.icon}</span>
                               </div>
                               <span>{company.label}</span>
                             </div>
