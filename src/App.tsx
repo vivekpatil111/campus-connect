@@ -16,9 +16,7 @@ import GroupDiscussion from "./pages/student/GroupDiscussion";
 import OneToOneSession from "./pages/student/OneToOneSession";
 import SessionFeedback from "./pages/student/SessionFeedback";
 import VerifiedAlumni from "./pages/student/VerifiedAlumni";
-import { ChatInterface } from "@/components/chat/ChatInterface";
 import { ChatWindow } from "@/components/chat/ChatWindow";
-import InterviewSimulation from "./pages/student/InterviewSimulation";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -47,7 +45,6 @@ const App = () => (
           <Route path="/student/chat/:chatId" element={<ChatWindow />} />
           <Route path="/student/session/:sessionId/feedback" element={<SessionFeedback />} />
           <Route path="/student/alumni" element={<VerifiedAlumni />} />
-          <Route path="/student/interview-simulation" element={<InterviewSimulation />} />
           <Route path="/alumni" element={<AlumniDashboard />} />
           <Route path="/alumni/chat/:chatId" element={<ChatWindow />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
