@@ -7,7 +7,6 @@ import Index from "./pages/Index";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import Dashboard from "./pages/Dashboard";
-import StudentHome from "./pages/student/StudentHome";
 import AlumniDashboard from "./pages/AlumniDashboard";
 import AdminDashboardPage from "./pages/AdminDashboard";
 import RoleSelection from "./pages/student/RoleSelection";
@@ -38,7 +37,6 @@ const App = () => (
 
           {/* Protected routes */}
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/student" element={<StudentHome />} />
           <Route path="/student/:companyId/roles" element={<RoleSelection />} />
           <Route path="/student/:companyId/:roleId/interview" element={<InterviewDashboard />} />
           <Route path="/student/:companyId/:roleId/video-interview" element={<VideoStream sessionId="test" companyName="Test" roleName="Test" onEndSession={() => {}} />} />
