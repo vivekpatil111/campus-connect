@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Mic, MicOff, Video, VideoOff, Play, Pause, StopCircle, Check, X, Clock, Volume2, VolumeX } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, Play, Pause, StopCircle, Check, X, Clock, Volume2, VolumeX, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { AIAvatar } from "@/components/interview/AIAvatar";

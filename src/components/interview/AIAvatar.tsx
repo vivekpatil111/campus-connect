@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Volume2, VolumeX, Mic, MicOff, Video, VideoOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { textToSpeech } from "@/utils/textToSpeech";
+import { Button } from "@/components/ui/button";
 
 interface AIAvatarProps {
   company: string;
