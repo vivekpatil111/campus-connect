@@ -12,13 +12,21 @@ import { InterviewQuickStart } from "@/components/student/InterviewQuickStart";
 import { InterviewTips } from "@/components/student/InterviewTips";
 import { PerformanceAnalytics } from "@/components/student/PerformanceAnalytics";
 import { AIResumeBot } from "@/components/student/AIResumeBot";
+import { InterviewEngine } from "@/components/interview/InterviewEngine";
+import { InterviewCompletionScreen } from "@/components/interview/InterviewCompletionScreen";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [selectedCompany, setSelectedCompany] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("google");
+  const [selectedRole, setSelectedRole] = useState("frontend");
+  const [selectedType, setSelectedType] = useState("technical");
+
+  // Interview state
+  const [showInterviewEngine, setShowInterviewEngine] = useState(false);
+  const [showCompletionScreen, setShowCompletionScreen] = useState(false);
+  const [interviewAnswers, setInterviewAnswers] = useState<any[]>([]);
+  const [interviewMetrics, setInterviewMetrics] = useState<any>(null);
 
   const companies = [
     { value: "google", label: "Google", logo: "G", color: "bg-blue-100 text-blue-600" },
@@ -52,14 +60,25 @@ export default function StudentDashboard() {
 
   const handleStartInterview = () => {
     if (selectedCompany && selectedRole && selectedType) {
-      navigate("/student/interview-simulation", {
-        state: {
-          company: selectedCompany,
-          role: selectedRole,
-          type: selectedType
-        }
-      });
+      setShowInterviewEngine(true);
     }
+  };
+
+  const handleInterviewComplete = (answers: any[], metrics: any) => {
+    setInterviewAnswers(answers);
+    setInterviewMetrics(metrics);
+    setShowInterviewEngine(false);
+    setShowCompletionScreen(true);
+  };
+
+  const handleCloseCompletion = () => {
+    setShowCompletionScreen(false);
+  };
+
+  const handleNextRound = () => {
+    setShowCompletionScreen(false);
+    // In a real implementation, this would start the next round
+    // For now, just close the completion screen
   };
 
   return (
@@ -131,6 +150,37 @@ export default function StudentDashboard() {
           </div>
         </div>
       </main>
+
+      {/* Interview Engine Modal */}
+      {showInterviewEngine && (
+        <InterviewEngine
+          company={selectedCompany}
+          role={selectedRole}
+          interviewType={selectedType}
+          questions={[
+            "Tell me about yourself",
+            "What are your strengths and weaknesses?",
+            "Why do you want to work at this company?",
+            "Describe a challenging project you worked on",
+            "Where do you see yourself in 5 years?"
+          ]}
+          onComplete={handleInterviewComplete}
+          onClose={() => setShowInterviewEngine(false)}
+        />
+      )}
+
+      {/* Interview Completion Screen */}
+      {showCompletionScreen && (
+        <InterviewCompletionScreen
+          company={selectedCompany}
+          role={selectedRole}
+          interviewType={selectedType}
+          answers={interviewAnswers}
+          engagementMetrics={interviewMetrics}
+          onClose={handleCloseCompletion}
+          onNextRound={handleNextRound}
+        />
+      )}
     </div>
   );
 }
