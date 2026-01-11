@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -27,18 +27,17 @@ export default function InterviewSimulation() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Update the interviewRounds state to match the InterviewRound type
+  // Initialize interview rounds
   const [interviewRounds, setInterviewRounds] = useState<InterviewRound[]>(() => {
     const state = location.state as { rounds?: InterviewRound[] } | null;
     if (state?.rounds) {
       return state.rounds;
     }
 
-    // Define ONLY the required rounds for all companies and roles with proper types
     return [
-      { id: "technical", name: "Technical Interview", description: "In-depth technical questions related to your role", status: "not-started" },
-      { id: "hr", name: "HR / Behavioral", description: "Personality and cultural fit assessment", status: "not-started" },
-      { id: "gd", name: "Group Discussion (GD)", description: "Collaborative discussion with AI participants", status: "not-started" }
+      { id: "technical", name: "Technical Interview", status: "not-started" },
+      { id: "hr", name: "HR / Behavioral", status: "not-started" },
+      { id: "gd", name: "Group Discussion (GD)", status: "not-started" }
     ];
   });
 
@@ -72,12 +71,10 @@ export default function InterviewSimulation() {
 
   const handleResumeRound = (roundId: string) => {
     console.log("Resume round:", roundId);
-    // In a real implementation, this would navigate to the appropriate round
   };
 
   const handleDownloadReport = (reportId: string) => {
     console.log("Download report:", reportId);
-    // In a real implementation, this would trigger a PDF download
   };
 
   return (
@@ -96,7 +93,6 @@ export default function InterviewSimulation() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="space-y-8">
-          {/* Interview Status Tracker */}
           <InterviewStatusTracker
             company="Google"
             role="Frontend Engineer"
@@ -104,13 +100,10 @@ export default function InterviewSimulation() {
             onResumeRound={handleResumeRound}
           />
 
-          {/* Quick Start Section */}
           <InterviewQuickStart />
 
-          {/* Interview Tips */}
           <InterviewTips />
 
-          {/* Performance Analytics */}
           <PerformanceAnalytics
             metrics={performanceMetrics}
             reports={interviewReports}
