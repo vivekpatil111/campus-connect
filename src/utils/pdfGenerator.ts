@@ -44,23 +44,32 @@ interface InterviewResult {
 export const generateInterviewPDF = (result: InterviewResult): Blob => {
   const doc = new jsPDF();
 
+  // Track Y position manually
+  let currentY = 20;
+
   // Add header
   doc.setFontSize(24);
   doc.setFont("helvetica", "bold");
-  doc.text("Interview Performance Report", 105, 20, { align: "center" });
+  doc.text("Interview Performance Report", 105, currentY, { align: "center" });
+  currentY += 10;
 
   // Add subheader
   doc.setFontSize(14);
   doc.setFont("helvetica", "normal");
-  doc.text(`Candidate: ${result.candidateName}`, 105, 30, { align: "center" });
-  doc.text(`Company: ${result.company} - ${result.role}`, 105, 40, { align: "center" });
-  doc.text(`Interview Type: ${result.interviewType}`, 105, 50, { align: "center" });
-  doc.text(`Date: ${result.date.toLocaleDateString()}`, 105, 60, { align: "center" });
+  doc.text(`Candidate: ${result.candidateName}`, 105, currentY, { align: "center" });
+  currentY += 10;
+  doc.text(`Company: ${result.company} - ${result.role}`, 105, currentY, { align: "center" });
+  currentY += 10;
+  doc.text(`Interview Type: ${result.interviewType}`, 105, currentY, { align: "center" });
+  currentY += 10;
+  doc.text(`Date: ${result.date.toLocaleDateString()}`, 105, currentY, { align: "center" });
+  currentY += 20;
 
   // Add scores section
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("Performance Scores", 20, 80);
+  doc.text("Performance Scores", 20, currentY);
+  currentY += 10;
 
   // Create scores table
   const scoresData = [
@@ -71,7 +80,7 @@ export const generateInterviewPDF = (result: InterviewResult): Blob => {
   ];
 
   autoTable(doc, {
-    startY: 85,
+    startY: currentY,
     head: [["Category", "Score"]],
     body: scoresData,
     styles: { fontSize: 12 },
@@ -79,10 +88,14 @@ export const generateInterviewPDF = (result: InterviewResult): Blob => {
     columnStyles: { 0: { cellWidth: 120 }, 1: { cellWidth: 60 } }
   });
 
+  // Update Y position after table
+  currentY = (doc as any).lastAutoTable.finalY + 15;
+
   // Add behavioral metrics
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("Behavioral Metrics", 20, doc.lastAutoTable.finalY + 15);
+  doc.text("Behavioral Metrics", 20, currentY);
+  currentY += 10;
 
   const metricsData = [
     ["Camera Active", `${Math.round(result.metrics.cameraOnDuration / result.metrics.totalDuration * 100)}%`],
@@ -94,7 +107,7 @@ export const generateInterviewPDF = (result: InterviewResult): Blob => {
   ];
 
   autoTable(doc, {
-    startY: doc.lastAutoTable.finalY + 20,
+    startY: currentY,
     head: [["Metric", "Value"]],
     body: metricsData,
     styles: { fontSize: 12 },
@@ -102,49 +115,61 @@ export const generateInterviewPDF = (result: InterviewResult): Blob => {
     columnStyles: { 0: { cellWidth: 120 }, 1: { cellWidth: 60 } }
   });
 
+  // Update Y position after table
+  currentY = (doc as any).lastAutoTable.finalY + 15;
+
   // Add question answers
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("Question Answers", 20, doc.lastAutoTable.finalY + 15);
+  doc.text("Question Answers", 20, currentY);
+  currentY += 10;
 
   // Add page break if needed
-  if (doc.lastAutoTable.finalY + 100 > doc.internal.pageSize.height) {
+  if (currentY + 100 > doc.internal.pageSize.height) {
     doc.addPage();
+    currentY = 20;
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text("Question Answers (continued)", 20, 20);
+    doc.text("Question Answers (continued)", 20, currentY);
+    currentY += 10;
   }
 
   // Add each question and answer
   result.answers.forEach((answer, index) => {
-    const startY = index === 0 ? doc.lastAutoTable.finalY + 20 : doc.lastAutoTable.finalY + 5;
-
     // Check if we need a new page
-    if (startY + 80 > doc.internal.pageSize.height) {
+    if (currentY + 80 > doc.internal.pageSize.height) {
       doc.addPage();
+      currentY = 20;
     }
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text(`Question ${index + 1}:`, 20, startY);
+    doc.text(`Question ${index + 1}:`, 20, currentY);
+    currentY += 10;
 
     doc.setFont("helvetica", "normal");
     const questionLines = doc.splitTextToSize(`Q: ${answer.questionId}`, 170);
-    doc.text(questionLines, 20, startY + 10);
+    doc.text(questionLines, 20, currentY);
+    currentY += (questionLines.length * 7) + 10;
 
     doc.setFont("helvetica", "normal");
     const answerLines = doc.splitTextToSize(`A: ${answer.transcript}`, 170);
-    doc.text(answerLines, 20, startY + 20 + (questionLines.length * 7));
+    doc.text(answerLines, 20, currentY);
+    currentY += (answerLines.length * 7) + 10;
 
     // Add metrics for this answer
     doc.setFontSize(10);
-    doc.text(`Time taken: ${answer.timeTaken / 1000} seconds`, 20, startY + 30 + (questionLines.length * 7) + (answerLines.length * 7));
-    doc.text(`Words: ${answer.transcript.split(/\s+/).length}`, 20, startY + 35 + (questionLines.length * 7) + (answerLines.length * 7));
-    doc.text(`Face detected: ${answer.behavioralMetrics.faceDetectedPercentage}%`, 20, startY + 40 + (questionLines.length * 7) + (answerLines.length * 7));
+    doc.text(`Time taken: ${answer.timeTaken / 1000} seconds`, 20, currentY);
+    currentY += 5;
+    doc.text(`Words: ${answer.transcript.split(/\s+/).length}`, 20, currentY);
+    currentY += 5;
+    doc.text(`Face detected: ${answer.behavioralMetrics.faceDetectedPercentage}%`, 20, currentY);
+    currentY += 10;
 
     // Add separator
     doc.setDrawColor(200);
-    doc.line(20, startY + 45 + (questionLines.length * 7) + (answerLines.length * 7), 190, startY + 45 + (questionLines.length * 7) + (answerLines.length * 7));
+    doc.line(20, currentY, 190, currentY);
+    currentY += 10;
   });
 
   // Add footer
