@@ -8,13 +8,14 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building, Code, Database, Brain, Target, User, Briefcase, Rocket, Play, Clock, Check, Star, AlertTriangle, Lightbulb, BarChart, LineChart, PieChart, Download, Filter, Calendar, TrendingUp, TrendingDown, Video, Mic, FileText } from "lucide-react";
+import { Building, Code, Database, Brain, Target, User, Briefcase, Rocket, Play, Clock, Check, Star, AlertTriangle, Lightbulb, BarChart, LineChart, PieChart, Download, Filter, Calendar, TrendingUp, TrendingDown, Video, Mic, FileText } from "llocide-react";
 import { AIResumeBot } from "@/components/student/AIResumeBot";
 import { AIInterviewModal } from "@/components/student/AIInterviewModal";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [showAIInterview, setShowAIInterview] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -113,7 +114,13 @@ export default function StudentDashboard() {
                   <p className="text-indigo-700 text-sm mb-4">
                     Practice with our advanced AI interviewer that simulates real interview scenarios with video and voice capabilities.
                   </p>
-                  <AIInterviewModal />
+                  <Button 
+                    className="w-full flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700"
+                    onClick={() => setShowAIInterview(true)}
+                  >
+                    <Play className="h-4 w-4" />
+                    Start AI Interview
+                  </Button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -127,7 +134,7 @@ export default function StudentDashboard() {
                   <Button 
                     variant="outline"
                     className="flex items-center gap-2"
-                    onClick={() => navigate("/student/mock-interviews")}
+                    onClick={() => setShowAIInterview(true)}
                   >
                     <Play className="h-4 w-4" />
                     Mock Interviews
@@ -237,6 +244,9 @@ export default function StudentDashboard() {
           </div>
         </div>
       </main>
+
+      {/* AI Interview Modal */}
+      {showAIInterview && <AIInterviewModal />}
     </div>
   );
 }
