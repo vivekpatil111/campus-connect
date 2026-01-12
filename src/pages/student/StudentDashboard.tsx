@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { signOut } from "firebase/auth";
@@ -8,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building, Code, Database, Brain, Target, User, Briefcase, Rocket, Play, Clock, Check, Star, AlertTriangle, Lightbulb, BarChart, LineChart, PieChart, Download, Filter, Calendar, TrendingUp, TrendingDown, Video, Mic, FileText } from "llocide-react";
+import { Brain, Target, User, Play, Clock, BarChart, Calendar, TrendingUp, TrendingDown, Video, FileText } from "lucide-react";
 import { AIResumeBot } from "@/components/student/AIResumeBot";
 import { AIInterviewModal } from "@/components/student/AIInterviewModal";
 
@@ -60,7 +59,6 @@ export default function StudentDashboard() {
           </div>
         </div>
       </header>
-
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Stats Cards */}
@@ -74,7 +72,6 @@ export default function StudentDashboard() {
               <p className="text-xs text-muted-foreground">+2 from last week</p>
             </CardContent>
           </Card>
-          
           <Card className="bg-white shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg. Interview Score</CardTitle>
@@ -85,7 +82,6 @@ export default function StudentDashboard() {
               <p className="text-xs text-muted-foreground">+5% from last month</p>
             </CardContent>
           </Card>
-          
           <Card className="bg-white shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Upcoming Interviews</CardTitle>
@@ -97,7 +93,6 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Interview Practice Section */}
           <div className="space-y-6">
@@ -122,17 +117,16 @@ export default function StudentDashboard() {
                     Start AI Interview
                   </Button>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <Button 
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2" 
                     onClick={() => navigate("/student/alumni")}
                   >
                     <User className="h-4 w-4" />
                     Connect with Alumni
                   </Button>
                   <Button 
-                    variant="outline"
+                    variant="outline" 
                     className="flex items-center gap-2"
                     onClick={() => setShowAIInterview(true)}
                   >
@@ -142,7 +136,6 @@ export default function StudentDashboard() {
                 </div>
               </CardContent>
             </Card>
-
             {/* Skill Assessment */}
             <Card className="bg-white shadow-sm">
               <CardHeader>
@@ -178,7 +171,6 @@ export default function StudentDashboard() {
               </CardContent>
             </Card>
           </div>
-
           {/* Right Column */}
           <div className="space-y-6">
             {/* AI Resume Bot */}
@@ -196,7 +188,6 @@ export default function StudentDashboard() {
                 <AIResumeBot />
               </CardContent>
             </Card>
-
             {/* Recent Activities */}
             <Card className="bg-white shadow-sm">
               <CardHeader>
@@ -244,7 +235,6 @@ export default function StudentDashboard() {
           </div>
         </div>
       </main>
-
       {/* AI Interview Modal */}
       {showAIInterview && <AIInterviewModal />}
     </div>
