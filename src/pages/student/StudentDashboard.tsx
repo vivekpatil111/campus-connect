@@ -164,21 +164,13 @@ export default function StudentDashboard() {
                 <p className="text-gray-600">
                   Upload your resume for AI-powered analysis or build a professional resume from scratch.
                 </p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3">
                   <Button 
                     className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
                     onClick={() => setShowResumeChecker(true)}
                   >
                     <FileSearch className="h-4 w-4" />
                     Resume Checker
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    className="flex items-center gap-2 border-purple-300 text-purple-700 hover:bg-purple-50"
-                    onClick={() => setShowResumeBuilder(true)}
-                  >
-                    <FilePlus className="h-4 w-4" />
-                    Resume Builder
                   </Button>
                 </div>
               </CardContent>
