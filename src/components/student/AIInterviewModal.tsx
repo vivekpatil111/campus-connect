@@ -14,7 +14,13 @@ import { CompanyInterviewSelection } from "@/components/interview/CompanyIntervi
 import { InterviewEngine } from "@/components/interview/InterviewEngine";
 import { InterviewCompletionScreen } from "@/components/interview/InterviewCompletionScreen";
 
-export function AIInterviewModal() {
+interface AIInterviewModalProps {
+  externalOpen?: boolean;
+  onExternalClose?: () => void;
+  showFloatingButton?: boolean;
+}
+
+export function AIInterviewModal({ externalOpen, onExternalClose, showFloatingButton = true }: AIInterviewModalProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +33,12 @@ export function AIInterviewModal() {
   const [interviewQuestions, setInterviewQuestions] = useState<string[]>([]);
   const [interviewAnswers, setInterviewAnswers] = useState<any[]>([]);
   const [engagementMetrics, setEngagementMetrics] = useState<any>(null);
+
+  // Use external open state if provided
+  const modalOpen = externalOpen !== undefined ? externalOpen : isOpen;
+  const setModalOpen = onExternalClose !== undefined
+    ? (open: boolean) => !open && onExternalClose()
+    : setIsOpen;
 
   // Company-specific question banks
   const companyQuestions = {
@@ -81,8 +93,12 @@ export function AIInterviewModal() {
   };
 
   const toggleBot = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
+    if (onExternalClose) {
+      onExternalClose();
+    } else {
+      setIsOpen(!isOpen);
+    }
+    if (!modalOpen) {
       // Reset state when opening
       resetInterviewState();
     }
@@ -134,16 +150,19 @@ export function AIInterviewModal() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      <Button
-        onClick={toggleBot}
-        className="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg animate-bounce"
-        aria-label="AI Interview Mentor"
-      >
-        <Brain className="w-8 h-8 text-white" />
-      </Button>
+      {/* Floating Bot Icon - only show if showFloatingButton is true */}
+      {showFloatingButton && (
+        <Button
+          onClick={toggleBot}
+          className="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg animate-bounce"
+          aria-label="AI Interview Mentor"
+        >
+          <Brain className="w-8 h-8 text-white" />
+        </Button>
+      )}
 
       {/* AI Interview Modal */}
-      {isOpen && (
+      {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
           <Card className="w-full max-w-2xl max-h-[90vh] flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between border-b pb-4">

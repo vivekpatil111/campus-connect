@@ -284,19 +284,18 @@ export default function StudentDashboard() {
         </div>
       </main>
       {/* AI Interview Modal */}
-      {showAIInterview && <AIInterviewModal />}
-      
-      {/* Resume Checker Modal */}
-      <AIResumeBot 
-        externalOpen={showResumeChecker} 
-        onExternalClose={() => setShowResumeChecker(false)}
+      <AIInterviewModal
+        externalOpen={showAIInterview}
+        onExternalClose={() => setShowAIInterview(false)}
         showFloatingButton={false}
       />
       
-      {/* Resume Builder Modal */}
-      {showResumeBuilder && (
-        <ResumeBuilderModal onClose={() => setShowResumeBuilder(false)} />
-      )}
+      {/* Resume Checker Modal */}
+      <AIResumeBot
+        externalOpen={showResumeChecker}
+        onExternalClose={() => setShowResumeChecker(false)}
+        showFloatingButton={false}
+      />
     </div>
   );
 }

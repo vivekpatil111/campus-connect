@@ -30,6 +30,7 @@ export function InterviewEngine({
   const { user } = useAuth();
   const { toast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null); // Use ref instead of state for stream
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isMicrophoneOn, setIsMicrophoneOn] = useState(true);
@@ -37,7 +38,6 @@ export function InterviewEngine({
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   const [answers, setAnswers] = useState<string[]>(Array(questions.length).fill(''));
   const [recordingTime, setRecordingTime] = useState(0);
-  const [stream, setStream] = useState<MediaStream | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [interviewStarted, setInterviewStarted] = useState(false);
 
@@ -49,7 +49,7 @@ export function InterviewEngine({
           video: true,
           audio: true
         });
-        setStream(mediaStream);
+        streamRef.current = mediaStream; // Use ref instead of state
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
         }
@@ -68,8 +68,9 @@ export function InterviewEngine({
     initMedia();
 
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+      // Use streamRef.current instead of stale stream state
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
@@ -94,8 +95,8 @@ export function InterviewEngine({
   };
 
   const toggleCamera = () => {
-    if (stream) {
-      const videoTrack = stream.getVideoTracks()[0];
+    if (streamRef.current) {
+      const videoTrack = streamRef.current.getVideoTracks()[0];
       if (videoTrack) {
         videoTrack.enabled = !isCameraOn;
         setIsCameraOn(!isCameraOn);
@@ -104,8 +105,8 @@ export function InterviewEngine({
   };
 
   const toggleMicrophone = () => {
-    if (stream) {
-      const audioTrack = stream.getAudioTracks()[0];
+    if (streamRef.current) {
+      const audioTrack = streamRef.current.getAudioTracks()[0];
       if (audioTrack) {
         audioTrack.enabled = !isMicrophoneOn;
         setIsMicrophoneOn(!isMicrophoneOn);
