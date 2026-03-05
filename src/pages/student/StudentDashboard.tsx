@@ -26,8 +26,10 @@ export default function StudentDashboard() {
   const [showResumeBuilder, setShowResumeBuilder] = useState(false);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
+  const [allInterviews, setAllInterviews] = useState<any[]>([]);
+  const [statsLoading, setStatsLoading] = useState(true);
 
-  // Real-time recent activities from Firestore
+  // Real-time recent activities (last 5) from Firestore
   useEffect(() => {
     if (!user) return;
     const activitiesRef = collection(db, "userActivities", user.uid, "activities");
@@ -42,6 +44,27 @@ export default function StudentDashboard() {
     return unsubscribe;
   }, [user]);
 
+  // Real-time stats — all interview activities
+  useEffect(() => {
+    if (!user) return;
+    const activitiesRef = collection(db, "userActivities", user.uid, "activities");
+    const q = query(activitiesRef, orderBy("timestamp", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const all = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setAllInterviews(all.filter((a: any) => a.type === "interview"));
+      setStatsLoading(false);
+    }, () => {
+      setStatsLoading(false);
+    });
+    return unsubscribe;
+  }, [user]);
+
+  // Derived stats
+  const totalPracticed = allInterviews.length;
+  const avgScore = allInterviews.length > 0
+    ? Math.round(allInterviews.reduce((sum: number, a: any) => sum + (a.score || 0), 0) / allInterviews.length)
+    : 0;
+
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -49,14 +72,6 @@ export default function StudentDashboard() {
     } catch (error) {
       console.error("Error signing out:", error);
     }
-  };
-
-  // Mock data for dashboard
-  const interviewStats = {
-    totalPracticed: 12,
-    avgScore: 78,
-    lastPractice: "2026-01-10",
-    upcomingInterviews: 3
   };
 
   const skillAssessment = [
@@ -89,8 +104,16 @@ export default function StudentDashboard() {
               <Play className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{interviewStats.totalPracticed}</div>
-              <p className="text-xs text-muted-foreground">+2 from last week</p>
+              {statsLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{totalPracticed}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {totalPracticed === 0 ? "No interviews yet" : `${totalPracticed} total completed`}
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
           <Card className="bg-white shadow-sm">
@@ -99,8 +122,16 @@ export default function StudentDashboard() {
               <BarChart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{interviewStats.avgScore}%</div>
-              <p className="text-xs text-muted-foreground">+5% from last month</p>
+              {statsLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{avgScore > 0 ? `${avgScore}%` : "—"}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {avgScore === 0 ? "Complete an interview to see score" : "Across all interviews"}
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
           <Card className="bg-white shadow-sm">
@@ -109,7 +140,7 @@ export default function StudentDashboard() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{interviewStats.upcomingInterviews}</div>
+              <div className="text-2xl font-bold">0</div>
               <p className="text-xs text-muted-foreground">Scheduled this week</p>
             </CardContent>
           </Card>
