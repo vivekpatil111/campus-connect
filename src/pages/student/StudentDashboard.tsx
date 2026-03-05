@@ -61,7 +61,7 @@ export default function StudentDashboard() {
           <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
           
           <div className="flex items-center space-x-4">
-            <span className="text-gray-700">Welcome, {user?.email}</span>
+            <span className="text-gray-700">Welcome, <span className="font-semibold text-indigo-600">{user?.displayName || user?.email?.split('@')[0]}</span></span>
             <Button onClick={handleSignOut} variant="outline">
               Sign Out
             </Button>
@@ -126,21 +126,13 @@ export default function StudentDashboard() {
                     Start AI Interview
                   </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <Button 
                     className="flex items-center gap-2" 
                     onClick={() => navigate("/student/alumni")}
                   >
                     <User className="h-4 w-4" />
                     Connect with Alumni
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center gap-2"
-                    onClick={() => setShowAIInterview(true)}
-                  >
-                    <Play className="h-4 w-4" />
-                    Mock Interviews
                   </Button>
                 </div>
               </CardContent>
