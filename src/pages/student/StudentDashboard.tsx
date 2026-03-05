@@ -137,40 +137,6 @@ export default function StudentDashboard() {
                 </div>
               </CardContent>
             </Card>
-            {/* Skill Assessment */}
-            <Card className="bg-white shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-green-600" />
-                  Skill Assessment
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {skillAssessment.map((item, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">{item.skill}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm">{item.level}%</span>
-                          {item.change > 0 ? (
-                            <TrendingUp className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <TrendingDown className="h-4 w-4 text-red-500" />
-                          )}
-                        </div>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-green-500 h-2 rounded-full" 
-                          style={{ width: `${item.level}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </div>
           {/* Right Column */}
           <div className="space-y-6">
