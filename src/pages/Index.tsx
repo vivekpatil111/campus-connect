@@ -165,7 +165,9 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="rounded-full px-8 py-6 text-lg font-medium border-indigo-300 text-indigo-800 hover:bg-indigo-50"
-                onClick={() => setIsMockInterviewOpen(true)}
+                onClick={() => {
+                  document.getElementById('demo-video-section')?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
                 <Play className="h-5 w-5 mr-2" />
                 Watch Demo
@@ -344,7 +346,7 @@ const Index = () => {
       </div>
 
       {/* Login Demo Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div id="demo-video-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">See How Easy It Is to Get Started</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
