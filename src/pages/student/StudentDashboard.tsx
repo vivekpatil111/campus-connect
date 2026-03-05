@@ -7,7 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Target, User, Play, Clock, BarChart, Calendar, TrendingUp, TrendingDown, Video, FileText } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Brain, Target, User, Play, Clock, BarChart, Calendar, TrendingUp, TrendingDown, Video, FileText, ChevronDown, FileSearch, FilePlus, ClipboardList } from "lucide-react";
 import { AIResumeBot } from "@/components/student/AIResumeBot";
 import { AIInterviewModal } from "@/components/student/AIInterviewModal";
 
@@ -15,6 +21,8 @@ export default function StudentDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showAIInterview, setShowAIInterview] = useState(false);
+  const [showResumeChecker, setShowResumeChecker] = useState(false);
+  const [showResumeBuilder, setShowResumeBuilder] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -50,7 +58,31 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
+          <div className="flex items-center gap-8">
+            <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
+            
+            {/* Resume Lab Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <ClipboardList className="h-4 w-4" />
+                  Resume Lab
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem onClick={() => setShowResumeChecker(true)}>
+                  <FileSearch className="h-4 w-4 mr-2" />
+                  Resume Checker
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowResumeBuilder(true)}>
+                  <FilePlus className="h-4 w-4 mr-2" />
+                  Resume Builder
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          
           <div className="flex items-center space-x-4">
             <span className="text-gray-700">Welcome, {user?.email}</span>
             <Button onClick={handleSignOut} variant="outline">
@@ -173,19 +205,35 @@ export default function StudentDashboard() {
           </div>
           {/* Right Column */}
           <div className="space-y-6">
-            {/* AI Resume Bot */}
+            {/* Quick Access to Resume Lab */}
             <Card className="bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Brain className="h-5 w-5 text-purple-600" />
-                  AI Resume Analysis
+                  Resume Lab
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">
-                  Upload your resume and get AI-powered analysis to find the best alumni mentors for you.
+              <CardContent className="space-y-4">
+                <p className="text-gray-600">
+                  Upload your resume for AI-powered analysis or build a professional resume from scratch.
                 </p>
-                <AIResumeBot />
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+                    onClick={() => setShowResumeChecker(true)}
+                  >
+                    <FileSearch className="h-4 w-4" />
+                    Resume Checker
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="flex items-center gap-2 border-purple-300 text-purple-700 hover:bg-purple-50"
+                    onClick={() => setShowResumeBuilder(true)}
+                  >
+                    <FilePlus className="h-4 w-4" />
+                    Resume Builder
+                  </Button>
+                </div>
               </CardContent>
             </Card>
             {/* Recent Activities */}
@@ -237,6 +285,18 @@ export default function StudentDashboard() {
       </main>
       {/* AI Interview Modal */}
       {showAIInterview && <AIInterviewModal />}
+      
+      {/* Resume Checker Modal */}
+      <AIResumeBot 
+        externalOpen={showResumeChecker} 
+        onExternalClose={() => setShowResumeChecker(false)}
+        showFloatingButton={false}
+      />
+      
+      {/* Resume Builder Modal */}
+      {showResumeBuilder && (
+        <ResumeBuilderModal onClose={() => setShowResumeBuilder(false)} />
+      )}
     </div>
   );
 }

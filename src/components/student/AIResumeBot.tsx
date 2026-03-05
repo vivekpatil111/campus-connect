@@ -44,7 +44,13 @@ interface ResumeAnalysisResult {
   improvementTips: string[];
 }
 
-export function AIResumeBot() {
+interface AIResumeBotProps {
+  externalOpen?: boolean;
+  onExternalClose?: () => void;
+  showFloatingButton?: boolean;
+}
+
+export function AIResumeBot({ externalOpen, onExternalClose, showFloatingButton = true }: AIResumeBotProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -55,6 +61,12 @@ export function AIResumeBot() {
   const [analysisResult, setAnalysisResult] = useState<ResumeAnalysisResult | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Use external open state if provided
+  const modalOpen = externalOpen !== undefined ? externalOpen : isOpen;
+  const setModalOpen = onExternalClose !== undefined 
+    ? (open: boolean) => !open && onExternalClose() 
+    : setIsOpen;
 
   // Domain to skills mapping for RAG logic
   const domainMappings: Record<string, string[]> = {
@@ -84,10 +96,10 @@ export function AIResumeBot() {
 
   // Initialize bot with greeting message
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    if (modalOpen && messages.length === 0) {
       sendBotMessage(botResponses.greeting, "info");
     }
-  }, [isOpen]);
+  }, [modalOpen]);
 
   const sendBotMessage = (text: string, type: "text" | "loading" | "error" | "success" | "info" = "text") => {
     const message: BotMessage = {
@@ -432,8 +444,12 @@ ${result.improvementTips.map((tip, index) => `• ${tip}`).join('\n')}`, "info")
   };
 
   const toggleBot = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
+    if (onExternalClose) {
+      onExternalClose();
+    } else {
+      setIsOpen(!isOpen);
+    }
+    if (!modalOpen) {
       // Reset bot state when opening
       resetBot();
     }
@@ -456,19 +472,21 @@ ${result.improvementTips.map((tip, index) => `• ${tip}`).join('\n')}`, "info")
 
   return (
     <>
-      {/* Floating Bot Icon with animation */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={toggleBot}
-          className="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg animate-bounce"
-          aria-label="AI Resume Mentor"
-        >
-          <Bot className="w-8 h-8 text-white" />
-        </Button>
-      </div>
+      {/* Floating Bot Icon with animation - only show if showFloatingButton is true */}
+      {showFloatingButton && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button
+            onClick={toggleBot}
+            className="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg animate-bounce"
+            aria-label="AI Resume Mentor"
+          >
+            <Bot className="w-8 h-8 text-white" />
+          </Button>
+        </div>
+      )}
 
       {/* AI Resume Bot Modal */}
-      {isOpen && (
+      {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
           <Card className="w-full max-w-2xl max-h-[90vh] flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
