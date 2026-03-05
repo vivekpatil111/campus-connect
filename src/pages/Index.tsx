@@ -112,7 +112,7 @@ const Index = () => {
               <a href="#" className="text-gray-700 hover:text-indigo-700 font-medium">Mock Interviews</a>
               <a href="#" className="text-gray-700 hover:text-indigo-700 font-medium">Interview Prep</a>
               <a href="#" className="text-gray-700 hover:text-indigo-700 font-medium">Resume Lab</a>
-              <a href="#" className="text-gray-700 hover:text-indigo-700 font-medium">Skill Practice</a>
+              
             </div>
 
             {/* Search and Login */}
