@@ -58,30 +58,7 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
-            
-            {/* Resume Lab Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <ClipboardList className="h-4 w-4" />
-                  Resume Lab
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-48">
-                <DropdownMenuItem onClick={() => setShowResumeChecker(true)}>
-                  <FileSearch className="h-4 w-4 mr-2" />
-                  Resume Checker
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowResumeBuilder(true)}>
-                  <FilePlus className="h-4 w-4 mr-2" />
-                  Resume Builder
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
           
           <div className="flex items-center space-x-4">
             <span className="text-gray-700">Welcome, {user?.email}</span>
