@@ -30,7 +30,8 @@ export function InterviewEngine({
   const { user } = useAuth();
   const { toast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null); // Use ref instead of state for stream
+  const streamRef = useRef<MediaStream | null>(null);
+  const recognitionRef = useRef<any>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isMicrophoneOn, setIsMicrophoneOn] = useState(true);
@@ -40,6 +41,7 @@ export function InterviewEngine({
   const [recordingTime, setRecordingTime] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [interviewStarted, setInterviewStarted] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   // Initialize camera and microphone
   useEffect(() => {
@@ -137,6 +139,7 @@ export function InterviewEngine({
   };
 
   const nextQuestion = () => {
+    stopListening();
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       speakQuestion(questions[currentQuestionIndex + 1]);
@@ -144,6 +147,7 @@ export function InterviewEngine({
   };
 
   const endInterview = () => {
+    stopListening();
     setIsRecording(false);
     setInterviewStarted(false);
 
@@ -168,6 +172,70 @@ export function InterviewEngine({
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = e.target.value;
     setAnswers(newAnswers);
+  };
+
+  const startListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({
+        title: "Not Supported",
+        description: "Speech recognition is not supported in this browser. Please type your answer.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      const newAnswers = [...answers];
+      newAnswers[currentQuestionIndex] = transcript;
+      setAnswers(newAnswers);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+      toast({
+        title: "Speech Error",
+        description: "Could not capture speech. Please try again or type your answer.",
+        variant: "destructive"
+      });
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    setIsListening(false);
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
   };
 
   // Capitalize company and role names for display
@@ -313,19 +381,42 @@ export function InterviewEngine({
 
                   {/* Answer Area */}
                   <div className="space-y-2">
-                    <label htmlFor="answer" className="text-sm font-medium text-gray-700">
-                      Your Answer (Voice)
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="answer" className="text-sm font-medium text-gray-700">
+                        Your Answer
+                      </label>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={toggleListening}
+                        className={`flex items-center gap-1 text-xs ${
+                          isListening
+                            ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
+                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        }`}
+                      >
+                        {isListening ? (
+                          <><MicOff className="w-3 h-3" /> Stop Speaking</>
+                        ) : (
+                          <><Mic className="w-3 h-3" /> Speak Answer</>
+                        )}
+                      </Button>
+                    </div>
                     <textarea
                       id="answer"
                       value={answers[currentQuestionIndex] || ''}
                       onChange={handleAnswerChange}
-                      placeholder="Speak your answer using microphone..."
-                      className="w-full min-h-[100px] p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                      disabled
+                      placeholder={isListening ? '🎤 Listening... speak your answer now' : 'Click "Speak Answer" or type your answer here...'}
+                      className={`w-full min-h-[100px] p-3 border rounded-md focus:outline-none focus:ring-2 ${
+                        isListening
+                          ? 'border-red-400 focus:ring-red-400 bg-red-50'
+                          : 'border-gray-300 focus:ring-indigo-500'
+                      }`}
                     />
                     <p className="text-xs text-gray-500">
-                      Speak naturally into your microphone. Your voice will be recorded.
+                      {isListening
+                        ? '🎤 Recording... click "Stop Speaking" when done'
+                        : 'Click "Speak Answer" to use voice, or type directly in the box'}
                     </p>
                   </div>
                 </div>
