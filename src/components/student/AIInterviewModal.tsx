@@ -40,7 +40,13 @@ export function AIInterviewModal({ externalOpen, onExternalClose, showFloatingBu
     ? (open: boolean) => !open && onExternalClose()
     : setIsOpen;
 
-  // Company-specific question banks
+  // Shuffle and pick 5 questions helper
+  const shuffleAndPick = (arr: string[], count: number = 5): string[] => {
+    const shuffled = [...arr].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+  };
+
+  // Company-specific question banks - expanded with more questions
   const companyQuestions = {
     Google: {
       Technical: [
@@ -48,14 +54,29 @@ export function AIInterviewModal({ externalOpen, onExternalClose, showFloatingBu
         "Implement LRU Cache with O(1) operations",
         "Find median of two sorted arrays",
         "Design YouTube video streaming system",
-        "Explain how HashMap works internally"
+        "Explain how HashMap works internally",
+        "Design a URL shortener service",
+        "Implement a rate limiter for APIs",
+        "Design a distributed file storage system",
+        "Find the longest substring without repeating characters",
+        "Design a recommendation system like Netflix",
+        "Explain how garbage collection works in Java",
+        "Design a chat application like WhatsApp",
+        "Implement merge sort and quick sort",
+        "Design a search autocomplete system",
+        "Explain TCP vs UDP with use cases"
       ],
       HR: [
         "Tell me about a time you disagreed with your manager",
         "How do you handle tight deadlines?",
         "Describe when you showed leadership",
         "Why do you want to work at Google?",
-        "How do you stay updated with technology?"
+        "How do you stay updated with technology?",
+        "Describe a project you're most proud of",
+        "Tell me about a time you failed and learned from it",
+        "How do you handle ambiguous requirements?",
+        "Describe a time you had to learn something new quickly",
+        "What is your approach to code reviews?"
       ]
     },
     Microsoft: {
@@ -64,14 +85,29 @@ export function AIInterviewModal({ externalOpen, onExternalClose, showFloatingBu
         "Implement thread-safe singleton pattern",
         "Reverse linked list iteratively and recursively",
         "Find longest palindromic substring",
-        "Explain REST vs GraphQL"
+        "Explain REST vs GraphQL",
+        "Design an elevator control system",
+        "Implement a thread pool in Java",
+        "Design a logging framework",
+        "Find the kth largest element in an array",
+        "Design a cache with TTL support",
+        "Explain event-driven architecture",
+        "Design a key-value store",
+        "Implement binary search on rotated array",
+        "Design a notification system",
+        "Explain how DNS works"
       ],
       HR: [
         "Describe a project where you took leadership",
         "How do you handle failure?",
         "What motivates you to excel?",
         "Tell me about influencing a team decision",
-        "How do you prioritize tasks?"
+        "How do you prioritize tasks?",
+        "Describe a time you had to give difficult feedback",
+        "How do you approach technical debt?",
+        "Tell me about a time you improved team productivity",
+        "Describe your ideal work environment",
+        "How do you balance quality vs speed?"
       ]
     },
     Amazon: {
@@ -80,14 +116,29 @@ export function AIInterviewModal({ externalOpen, onExternalClose, showFloatingBu
         "Implement binary search tree operations",
         "Explain microservices architecture",
         "Design scalable e-commerce system",
-        "Find longest consecutive sequence"
+        "Find longest consecutive sequence",
+        "Design an order processing system",
+        "Implement a consistent hashing algorithm",
+        "Design a shopping cart service",
+        "Find all anagrams in a string",
+        "Design a product recommendation engine",
+        "Explain eventual consistency in distributed systems",
+        "Design a payment processing system",
+        "Implement topological sort",
+        "Design an inventory management system",
+        "Explain how load balancers work"
       ],
       HR: [
         "Tell me about going above and beyond",
         "How do you handle conflicts in team?",
         "Give example of customer problem solving",
         "Why Amazon specifically?",
-        "Describe time you showed ownership"
+        "Describe time you showed ownership",
+        "Tell me about a time you made a mistake",
+        "How do you deal with scope creep?",
+        "Describe a time you had to convince others",
+        "How do you handle changing priorities?",
+        "Tell me about a time you simplified a complex process"
       ]
     }
   };
@@ -121,8 +172,11 @@ export function AIInterviewModal({ externalOpen, onExternalClose, showFloatingBu
     setSelectedRole(role);
     setSelectedInterviewType(type);
 
-    // Get questions for selected company and type
-    const questions = companyQuestions[company as keyof typeof companyQuestions]?.[type] || [];
+    // Get all questions for selected company and type
+    const allQuestions = companyQuestions[company as keyof typeof companyQuestions]?.[type] || [];
+    
+    // Shuffle and pick only 5 questions
+    const questions = shuffleAndPick(allQuestions, 5);
     setInterviewQuestions(questions);
 
     setShowCompanySelection(false);
