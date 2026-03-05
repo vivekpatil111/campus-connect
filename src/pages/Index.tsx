@@ -160,7 +160,7 @@ const Index = () => {
                 className="bg-indigo-700 hover:bg-indigo-800 text-white rounded-full px-8 py-6 text-lg font-medium"
                 onClick={() => setIsMockInterviewOpen(true)}
               >
-                Start Mock Interview
+                Start Mock Test
               </Button>
               <Button
                 variant="outline"
