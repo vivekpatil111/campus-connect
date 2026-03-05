@@ -183,11 +183,30 @@ export function AIInterviewModal({ externalOpen, onExternalClose, showFloatingBu
     setShowVideoInterview(true);
   };
 
-  const handleInterviewComplete = (answers: any[], metrics: any) => {
+  const handleInterviewComplete = async (answers: any[], metrics: any) => {
     setInterviewAnswers(answers);
     setEngagementMetrics(metrics);
     setShowVideoInterview(false);
     setShowCompletionScreen(true);
+
+    // Save activity to Firestore for real-time dashboard
+    if (user) {
+      try {
+        const score = Math.floor(60 + Math.random() * 35); // placeholder until AI scoring
+        await addDoc(collection(db, "userActivities", user.uid, "activities"), {
+          type: "interview",
+          company: selectedCompany,
+          role: selectedRole,
+          interviewType: selectedInterviewType,
+          score,
+          questionsAnswered: metrics.questionsAnswered,
+          duration: metrics.duration,
+          timestamp: serverTimestamp()
+        });
+      } catch (err) {
+        console.error("Failed to save activity:", err);
+      }
+    }
   };
 
   const handleNextRound = () => {

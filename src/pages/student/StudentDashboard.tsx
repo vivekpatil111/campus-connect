@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Brain, Target, User, Play, Clock, BarChart, Calendar, TrendingUp, TrendingDown, Video, FileText, ChevronDown, FileSearch, FilePlus, ClipboardList } from "lucide-react";
+import { Brain, Target, User, Play, Clock, BarChart, Calendar, TrendingUp, TrendingDown, Video, FileText, ChevronDown, FileSearch, FilePlus, ClipboardList, Loader2 } from "lucide-react";
 import { AIResumeBot } from "@/components/student/AIResumeBot";
 import { AIInterviewModal } from "@/components/student/AIInterviewModal";
 
@@ -23,6 +24,23 @@ export default function StudentDashboard() {
   const [showAIInterview, setShowAIInterview] = useState(false);
   const [showResumeChecker, setShowResumeChecker] = useState(false);
   const [showResumeBuilder, setShowResumeBuilder] = useState(false);
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
+
+  // Real-time recent activities from Firestore
+  useEffect(() => {
+    if (!user) return;
+    const activitiesRef = collection(db, "userActivities", user.uid, "activities");
+    const q = query(activitiesRef, orderBy("timestamp", "desc"), limit(5));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const acts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setRecentActivities(acts);
+      setActivitiesLoading(false);
+    }, () => {
+      setActivitiesLoading(false);
+    });
+    return unsubscribe;
+  }, [user]);
 
   const handleSignOut = async () => {
     try {
@@ -46,12 +64,6 @@ export default function StudentDashboard() {
     { skill: "React", level: 78, change: 5 },
     { skill: "Node.js", level: 72, change: -3 },
     { skill: "Python", level: 65, change: 8 }
-  ];
-
-  const recentActivities = [
-    { id: 1, type: "interview", company: "Google", role: "Frontend Engineer", date: "2026-01-08", score: 82 },
-    { id: 2, type: "resume", action: "Updated resume", date: "2026-01-05" },
-    { id: 3, type: "interview", company: "Microsoft", role: "Backend Engineer", date: "2026-01-03", score: 75 }
   ];
 
   return (
@@ -180,39 +192,59 @@ export default function StudentDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {recentActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-3">
-                      {activity.type === "interview" ? (
-                        <Video className="h-5 w-5 text-blue-500 mt-0.5" />
-                      ) : (
-                        <FileText className="h-5 w-5 text-green-500 mt-0.5" />
-                      )}
-                      <div className="flex-1">
+                {activitiesLoading ? (
+                  <div className="flex justify-center py-6">
+                    <Loader2 className="h-6 w-6 animate-spin text-indigo-500" />
+                  </div>
+                ) : recentActivities.length === 0 ? (
+                  <div className="text-center py-6 text-gray-500">
+                    <Clock className="h-10 w-10 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm">No activities yet.</p>
+                    <p className="text-xs text-gray-400 mt-1">Complete an interview or upload a resume to see activity here.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {recentActivities.map((activity) => (
+                      <div key={activity.id} className="flex items-start gap-3">
                         {activity.type === "interview" ? (
-                          <>
-                            <p className="font-medium">
-                              {activity.company} - {activity.role}
-                            </p>
-                            <div className="flex items-center gap-2">
-                              <Badge variant="secondary" className="text-xs">
-                                Score: {activity.score}%
-                              </Badge>
-                              <span className="text-xs text-gray-500">
-                                {activity.date}
-                              </span>
-                            </div>
-                          </>
+                          <Video className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                         ) : (
-                          <>
-                            <p className="font-medium">{activity.action}</p>
-                            <p className="text-xs text-gray-500">{activity.date}</p>
-                          </>
+                          <FileText className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                         )}
+                        <div className="flex-1 min-w-0">
+                          {activity.type === "interview" ? (
+                            <>
+                              <p className="font-medium text-sm">
+                                {activity.company} — {activity.role}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                {activity.score !== undefined && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    Score: {activity.score}%
+                                  </Badge>
+                                )}
+                                <span className="text-xs text-gray-500">
+                                  {activity.timestamp?.toDate
+                                    ? activity.timestamp.toDate().toLocaleDateString()
+                                    : activity.date || ""}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <p className="font-medium text-sm">{activity.title || activity.action}</p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {activity.timestamp?.toDate
+                                  ? activity.timestamp.toDate().toLocaleDateString()
+                                  : activity.date || ""}
+                              </p>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

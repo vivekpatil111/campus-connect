@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Bot, Upload, X, Send, Check, AlertTriangle, Loader2, MessageCircle, Brain, FileText, GraduationCap, Linkedin, Star, ThumbsUp, Lightbulb } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { collection, query, where, getDocs, limit, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useNavigate } from "react-router-dom";
 
@@ -190,6 +190,21 @@ export function AIResumeBot({ externalOpen, onExternalClose, showFloatingButton 
 
       setAnalysisResult(result);
       sendAnalysisResults(result);
+
+      // Save activity to Firestore for real-time dashboard
+      if (user) {
+        try {
+          await addDoc(collection(db, "userActivities", user.uid, "activities"), {
+            type: "resume",
+            title: "Resume analyzed",
+            domain: detectedDomain,
+            confidenceScore,
+            timestamp: serverTimestamp()
+          });
+        } catch (err) {
+          console.error("Failed to save resume activity:", err);
+        }
+      }
     } catch (error) {
       console.error("Error analyzing resume:", error);
       sendBotMessage(botResponses.error, "error");
