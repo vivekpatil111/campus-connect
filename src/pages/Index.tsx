@@ -107,14 +107,6 @@ const Index = () => {
               <span className="ml-2 text-xl font-bold text-gray-900">CampusPrep</span>
             </div>
 
-            {/* Navigation Menu */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-700 hover:text-indigo-700 font-medium">Mock Interviews</a>
-              <a href="#" className="text-gray-700 hover:text-indigo-700 font-medium">Interview Prep</a>
-              <a href="#" className="text-gray-700 hover:text-indigo-700 font-medium">Resume Lab</a>
-              
-            </div>
-
             {/* Search and Login */}
             <div className="flex items-center space-x-4">
               <div className="relative hidden sm:block">
