@@ -75,6 +75,15 @@ export function InterviewEngine({
     };
   }, []);
 
+  // Assign stream to video element when interview starts
+  useEffect(() => {
+    if (interviewStarted && streamRef.current && videoRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      // Ensure video plays
+      videoRef.current.play().catch(err => console.error("Video play error:", err));
+    }
+  }, [interviewStarted]);
+
   // Timer effect
   useEffect(() => {
     let interval: NodeJS.Timeout;
